@@ -1,0 +1,29 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+#define NFORKS 60000
+
+void do_nothing(void)
+{
+	unsigned long f = 0xb00da;
+}
+
+int main(void)
+{
+	int pid, j, status;
+
+	for (j = 0; j < NFORKS; j++) {
+		switch (pid = fork()) {
+		case -1:
+			printf("fork failed! [%d]\n", pid);
+		case 0:	// Child process
+			do_nothing();
+			exit(EXIT_SUCCESS);
+		default:	// Parent process
+			waitpid(pid, &status, 0);
+		}
+	}
+	exit(EXIT_SUCCESS);
+}
